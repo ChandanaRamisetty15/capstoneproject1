@@ -1,0 +1,134 @@
+/* Base styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden; 
+}
+
+/* 1. CAROUSEL STYLES */
+.carousel-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; 
+}
+.carousel-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0; 
+    transition: opacity 1.5s ease-in-out; 
+    background-size: cover;
+    background-position: center;
+    background-color: #f0fdf4;
+}
+.carousel-image.active {
+    opacity: 1;
+}
+
+/* 2. OVERLAY AND MAIN CONTENT STYLES */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Removed fixed color, will be controlled by JS for dynamic tint */
+    background-color: transparent; 
+    transition: background-color 1.5s ease-in-out; /* Smooth transition for color change */
+    z-index: 0;
+}
+
+.content-wrapper {
+    position: relative;
+    z-index: 10; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    color: #1f2937; /* Tailwind: text-gray-800 */
+}
+
+.container {
+    /* Now has a set white background that will be dynamically tinted */
+    background-color: rgba(255, 255, 255, 0.95); 
+    /* FINAL WIDTH: Max-width is 400px, as requested */
+    padding: 2rem 2.5rem; /* Tailwind: p-8 md:p-10 */
+    border-radius: 2rem; /* Tailwind: rounded-3xl */
+    max-width: 400px; 
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); /* Tailwind: shadow-2xl */
+    /* Border and transform are now controlled by JS colors */
+    border: 1px solid transparent; 
+    transition: all 1.5s ease-in-out; /* Smooth transition for color and transform */
+}
+
+.container:hover {
+     transform: scale(1.02); 
+}
+
+h1 {
+    /* Reduced font size for better fit */
+    font-size: 1.5rem; /* Tailwind: text-4xl */
+    font-weight: 800; /* Tailwind: font-extrabold */
+    margin-bottom: 0.5rem;
+    /* Color controlled by JS */
+    color: #065f46; /* Tailwind: text-green-800 */
+    transition: color 1.5s ease-in-out;
+}
+
+p.quote {
+    font-style: Roboto, sans-serif;
+    font-size: 1.25rem; /* Tailwind: text-xl */
+    margin: 1rem 0 2rem; 
+    color: #4b5563; /* Tailwind: text-gray-600 */
+    line-height: 1.6;
+}
+
+.get-started-btn {
+    /* Background and shadow controlled by JS */
+    background-color: #4ade80; /* Tailwind: bg-green-400 */
+    color: white; 
+    padding: 1rem 2.5rem; 
+    font-size: 1.2rem; 
+    font-weight: 700; /* Tailwind: font-bold */
+    border-radius: 9999px; /* Tailwind: rounded-full */
+    transition: background-color 1.5s ease-in-out, transform 0.3s ease, box-shadow 1.5s ease-in-out;
+    box-shadow: 0 6px 20px rgba(74, 222, 128, 0.5); 
+    border: none;
+    cursor: pointer;
+}
+
+.get-started-btn:hover {
+    /* Hover darker effect is applied dynamically in JS */
+    transform: translateY(-2px); 
+}
+
+footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6b7280; /* Tailwind: text-gray-500 */
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .container {
+        padding: 1.5rem 1rem;
+        max-width: 90%;
+    }
+    h1 {
+        font-size: 2rem;
+    }
+    p.quote {
+        font-size: 1rem;
+    }
+}

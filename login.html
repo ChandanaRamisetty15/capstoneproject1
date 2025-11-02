@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles and overrides */
+        :root {
+            --primary-color: #0d9488; /* Tailwind teal-700 */
+            --accent-color: #14b8a6;  /* Tailwind teal-500 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #e0f2f1 100%); /* Light, gentle background */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        .form-card {
+            max-width: 420px;
+            width: 100%;
+            background-color: white;
+            border-radius: 1.5rem; /* Large rounded corners */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.5s ease-in-out;
+            padding: 2rem;
+        }
+        .input-field {
+            border: 2px solid #e5e7eb; /* Gray-200 */
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-field:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.5); /* Teal focus ring */
+        }
+        /* Custom toggle button animation */
+        .toggle-btn {
+            position: relative;
+            z-index: 10;
+        }
+        .active-toggle-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            background-color: var(--primary-color);
+            border-radius: 0.75rem;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1;
+        }
+        .login-active {
+            transform: translateX(0%);
+        }
+        .signup-active {
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="authContainer" class="form-card">
+        <h2 id="formTitle" class="text-3xl font-extrabold text-gray-800 text-center mb-6">Sign Up</h2>
+
+        <!-- Toggle Switch -->
+        <div class="relative flex p-1 mb-6 rounded-xl bg-gray-100 shadow-inner">
+            <div id="activeBg" class="active-toggle-bg signup-active"></div>
+            <button id="loginToggle" class="toggle-btn w-1/2 py-2 text-sm font-semibold text-gray-700 transition duration-300" onclick="toggleForm(true)">
+                Log In
+            </button>
+            <button id="signupToggle" class="toggle-btn w-1/2 py-2 text-sm font-semibold text-white transition duration-300" onclick="toggleForm(false)">
+                Sign Up
+            </button>
+        </div>
+        
+        <!-- Authentication Form -->
+        <form id="authForm" onsubmit="handleAuth(event)">
+            
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="you@example.com"
+                       class="input-field w-full px-4 py-2.5 rounded-lg text-gray-700 placeholder-gray-400">
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-600 mb-1">Password</label>
+                <input type="password" id="password" name="password" required 
+                       minlength="8" placeholder="Must be at least 8 characters"
+                       class="input-field w-full px-4 py-2.5 rounded-lg text-gray-700 placeholder-gray-400">
+            </div>
+
+            <!-- Confirm Password (Only visible for Sign Up) -->
+            <div id="confirmPasswordGroup" class="mb-6">
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-600 mb-1">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required 
+                       placeholder="Re-enter your password"
+                       class="input-field w-full px-4 py-2.5 rounded-lg text-gray-700 placeholder-gray-400">
+            </div>
+
+            <!-- Error/Success Message Box -->
+            <div id="messageBox" class="text-center py-3 px-4 rounded-xl mb-6 hidden" role="alert">
+                <!-- Messages go here -->
+            </div>
+
+            <button type="submit" id="submitBtn" 
+                    class="w-full py-3 font-bold text-white rounded-xl bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-200 transition duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.01]">
+                Sign Up
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // State management
+        let isLogin = false; // Start on Sign Up page
+
+        // DOM elements
+        const formTitle = document.getElementById('formTitle');
+        const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageBox = document.getElementById('messageBox');
+        const activeBg = document.getElementById('activeBg');
+        const loginToggle = document.getElementById('loginToggle');
+        const signupToggle = document.getElementById('signupToggle');
+
+        /**
+         * Toggles the form between Login and Sign Up modes.
+         * @param {boolean} shouldLogin - True for Login, False for Sign Up.
+         */
+        function toggleForm(shouldLogin) {
+            isLogin = shouldLogin;
+            
+            // 1. Update Title and Button Text
+            formTitle.textContent = isLogin ? 'Welcome Back!' : 'Create Your Account';
+            submitBtn.textContent = isLogin ? 'Log In' : 'Sign Up';
+
+            // 2. Toggle Confirm Password field visibility
+            confirmPasswordGroup.style.display = isLogin ? 'none' : 'block';
+            document.getElementById('confirmPassword').required = !isLogin;
+            
+            // 3. Update Toggle Switch Visuals
+            if (isLogin) {
+                activeBg.classList.remove('signup-active');
+                activeBg.classList.add('login-active');
+                loginToggle.classList.add('text-white');
+                signupToggle.classList.remove('text-white');
+                signupToggle.classList.add('text-gray-700');
+            } else {
+                activeBg.classList.remove('login-active');
+                activeBg.classList.add('signup-active');
+                loginToggle.classList.remove('text-white');
+                loginToggle.classList.add('text-gray-700');
+                signupToggle.classList.add('text-white');
+                signupToggle.classList.remove('text-gray-700');
+            }
+            
+            // 4. Clear any previous messages
+            clearMessage();
+            
+            // 5. Reset form fields (optional, but good practice)
+            document.getElementById('authForm').reset();
+        }
+
+        /**
+         * Displays a temporary message (error or success).
+         */
+        function displayMessage(type, message) {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'text-green-700');
+            }
+        }
+
+        /**
+         * Clears the message box.
+         */
+        function clearMessage() {
+            messageBox.classList.add('hidden');
+            messageBox.textContent = '';
+        }
+
+        /**
+         * Handles the form submission (simulated since it's front-end only).
+         */
+        function handleAuth(event) {
+            event.preventDefault(); // Stop the default form submission
+
+            clearMessage();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // --- Client-Side Validation ---
+            if (!isLogin) {
+                // Sign Up specific validation
+                if (password !== confirmPassword) {
+                    displayMessage('error', 'Error: Passwords do not match!');
+                    return;
+                }
+            }
+
+            // Simulate loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = isLogin ? 'Logging In...' : 'Signing Up...';
+            
+            // --- Simulate API Call/Backend Interaction ---
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLogin ? 'Log In' : 'Sign Up';
+
+                // Since we have no backend, we always simulate success for the demo
+                if (isLogin) {
+                    displayMessage('success', `Success! Logged in as ${email}. (This is a front-end simulation.)`);
+                } else {
+                    displayMessage('success', `Success! Account created for ${email}. Redirecting...`);
+setTimeout(() => {
+    // redirect to your React app
+    window.location.href = "http://localhost:3000";
+}, 2000);
+
+                }
+
+                // Optionally, clear form inputs on success
+                document.getElementById('authForm').reset();
+            }, 1500); // Wait 1.5 seconds to simulate network delay
+        }
+
+        // Initialize the form view when the page loads (defaults to Sign Up)
+        window.onload = () => {
+            toggleForm(isLogin);
+        };
+    </script>
+
+</body>
+</html>
